@@ -50,7 +50,21 @@ class ExampleTests: XCTestCase {
     XCTAssert(value.count == 3)
     XCTAssert(value["avg"] == 0.278)
   }
-  
+
+  func testComment() {
+    let value = try! Yaml.load(
+        """
+        foo:
+            bar: # quux
+                - baz
+                - qux
+        """,
+        preserveComments: true
+      )
+
+    XCTAssertEqual(value["foo"].getComment(forKey: "bar"), "quux")
+  }
+
   func testExample3 () {
     let value = try! Yaml.load(
       "american:\n" +
@@ -490,6 +504,7 @@ extension ExampleTests {
       ("testExample20", testExample20),
       ("testExample21", testExample21),
       ("testExample22", testExample22),
+      ("testComment", testComment),
       ("testYamlHomepage", testYamlHomepage),
       ("testPerformanceExample", testPerformanceExample),
     ]

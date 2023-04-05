@@ -45,6 +45,17 @@ public enum Yaml: Hashable {
             fatalError("`-` operator may only be used on .int or .double Yaml values")
         }
     }
+
+    public static let commentPrefix = "__comment__"
+
+    public func getComment(forKey key: String) -> String? {
+        switch self[.string("\(Yaml.commentPrefix)\(key)")] {
+            case let .string(value):
+                return value
+            default:
+                return nil
+        }
+    }
 }
 
 extension Yaml {
@@ -131,8 +142,8 @@ extension Yaml: CustomStringConvertible {
 
 extension Yaml {
   
-  public static func load (_ text: String) throws -> Yaml {
-    let result = tokenize(text) >>=- Context.parseDoc
+  public static func load (_ text: String, preserveComments: Bool = false) throws -> Yaml {
+    let result = tokenize(text) >>=- Context.makeDocParser(preserveComments: preserveComments)
     if let value = result.value { return value } else { throw ResultError.message(result.error) }
   }
 
@@ -145,7 +156,7 @@ extension Yaml {
   public static func debug (_ text: String) -> Yaml? {
     let result = tokenize(text)
         >>- { tokens in print("\n====== Tokens:\n\(tokens)"); return tokens }
-        >>=- Context.parseDoc
+        >>=- Context.makeDocParser()
         >>- { value -> Yaml in print("------ Doc:\n\(value)"); return value }
     if let error = result.error {
       print("~~~~~~\n\(error)")
