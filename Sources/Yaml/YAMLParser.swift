@@ -345,7 +345,7 @@ private func parse (_ context: Context) -> YAMLResult<ContextValue> {
     // print(c_)
     let c = c_
         >>- ignoreSpace
-        >>=- expect(Yaml.TokenType.dedent, message: "expected dedent")
+        //>>=- expect(Yaml.TokenType.dedent, message: "expected dedent")
     return createContextValue <^> c <*> v
 
   case .anchor:
