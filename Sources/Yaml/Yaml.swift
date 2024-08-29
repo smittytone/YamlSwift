@@ -250,11 +250,13 @@ extension Yaml {
     case .int(let i):
       return i
     case .double(let f):
-      if Double(Int(f)) == f {
-        return Int(f)
-      } else {
+        if let df = Int(exactly: f) {
+            if Double(df) == f {
+                return Int(f)
+            }
+        }
+                        
         return nil
-      }
     default:
       return nil
     }
